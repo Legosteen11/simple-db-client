@@ -109,6 +109,11 @@ client.getSingleValueQuery("SELECT name FROM users WHERE id = ?", 3
 ``` 
 will return the name of the user with id 3)
 
+## Contributing/Helping
+Thank you for considering to contribute!
+
+If you want to help by adding an implementation of the IDatabaseClient please add your implementation in the `io.github.legosteen11.client` package (in `src/main/kotlin`) and add a unit test in the same package under the `src/test/kotlin` folder with all the functions you are overriding. Check [this](https://github.com/Legosteen11/simple-db-client/blob/master/src/test/kotlin/io/github/legosteen11/simpledbclient/client/SimpleDatabaseClientTest.kt) example for how to add a unit test.
+
 ## About
 
 This library was created for use in a few projects for myself

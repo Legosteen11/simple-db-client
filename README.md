@@ -1,6 +1,6 @@
 # simple-db-client
 
-A simple database client for Java
+A simple database client for Java written in Kotlin.
 
 ## Using simple-db-client
 
@@ -105,7 +105,7 @@ client.getSingleValueQuery(sql, parameters...)
 
 Will return a single value from a query (for example: 
 ```java
-client.getSingleValueQuery("SELECT name FROM users WHERE id = ?", 3
+client.getSingleValueQuery("SELECT name FROM users WHERE id = ?", 3)
 ``` 
 will return the name of the user with id 3)
 

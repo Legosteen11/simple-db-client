@@ -7,6 +7,18 @@ A simple database client for Java
 ### Step 1): Add the jar to your classpath
 
 Using Maven:
+
+First add the repository to your repositories:
+
+```xml
+<repositories>
+  <repository>
+    <id>simple-db-client</id>
+    <url>https://dl.bintray.com/legosteen11/simple-db-client/</url>
+  </repository>
+</repositories>
+```
+
 ```xml
 <dependency>
   <groupId>io.github.legosteen11</groupId>
@@ -17,6 +29,17 @@ Using Maven:
 ```
 
 Using Gradle:
+
+First add the repository to your repositories:
+
+```groovy
+repositories {
+    maven {
+        url "https://dl.bintray.com/legosteen11/simple-db-client/"
+    }
+}
+```
+
 ```groovy
 compile 'io.github.legosteen11:simple-db-client:1.0'
 ```

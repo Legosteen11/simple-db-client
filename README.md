@@ -8,7 +8,7 @@ A simple database client for Java
 
 // todo
 
-#### Step 2): Choose your client implementation
+### Step 2): Choose your client implementation
 
 Now you can start using simple-db-client:
 
@@ -25,7 +25,7 @@ In Java:
 
 The `port` parameter is optional and is `3306` (for MySQL) by default.
 
-#### Step 3): Start using the client object
+### Step 3): Start using the client object
 
 Now you can start using the client object
 

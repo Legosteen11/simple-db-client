@@ -23,7 +23,7 @@ First add the repository to your repositories:
 <dependency>
   <groupId>io.github.legosteen11</groupId>
   <artifactId>simple-db-client</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
   <type>pom</type>
 </dependency>
 ```
@@ -41,7 +41,7 @@ repositories {
 ```
 
 ```groovy
-compile 'io.github.legosteen11:simple-db-client:1.0'
+compile 'io.github.legosteen11:simple-db-client:1.1'
 ```
 
 ### Step 2): Choose your client implementation
@@ -52,6 +52,7 @@ First create a new object of an implementation of IDatabaseClient.
 
 Currently you can choose from these implementations:
 - `SimpleDatabaseClient`
+- `ConnectionPoolDatabaseClient`
 
 In Kotlin:
 `val client = SimpleDatabaseClient(host, username, password, database, port)`
@@ -60,6 +61,7 @@ In Java:
 `SimpleDatabaseClient client = new SimpleDatabaseClient(host, username, password, database, port)`
 
 The `port` parameter is optional and is `3306` (for MySQL) by default.
+The `driverName` parameter is optional and is `mysql` (for MySQL) by default.
 
 ### Step 3): Start using the client object
 
@@ -112,7 +114,13 @@ will return the name of the user with id 3)
 ## Contributing/Helping
 Thank you for considering to contribute!
 
-If you want to help by adding an implementation of the IDatabaseClient please add your implementation in the `io.github.legosteen11.client` package (in `src/main/kotlin`) and add a unit test in the same package under the `src/test/kotlin` folder with all the functions you are overriding. Check [this](https://github.com/Legosteen11/simple-db-client/blob/master/src/test/kotlin/io/github/legosteen11/simpledbclient/client/SimpleDatabaseClientTest.kt) example for how to add a unit test.
+If you want to help by adding an implementation of the IDatabaseClient please add your implementation in the `io.github.legosteen11.client` package (in `src/main/kotlin`) and add a unit test in the same package under the `src/test/kotlin` folder. Extend the base test class `DatabaseClientTestBase` and override the function `getClientInstance()`. The host, username, password, database and jdbcUrl are all in the base test class and you should use these parameters. Check [this](https://github.com/Legosteen11/simple-db-client/blob/master/src/test/kotlin/io/github/legosteen11/simpledbclient/client/SimpleDatabaseClientTest.kt) example for how to add a unit test:
+
+```kotlin
+class SimpleDatabaseClientTest: DatabaseClientTestBase<SimpleDatabaseClient>() {
+    override fun getClientInstance() = SimpleDatabaseClient(host, username, password, database, jdbcUrl = jdbcUrl)
+}
+```
 
 ## About
 

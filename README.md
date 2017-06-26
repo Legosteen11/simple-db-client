@@ -6,6 +6,8 @@ A simple database client for Java written in Kotlin.
 
 ### Step 1): Add the jar to your classpath
 
+The latest version: 1.1
+
 Using Maven:
 
 First add the repository to your repositories:
@@ -13,8 +15,8 @@ First add the repository to your repositories:
 ```xml
 <repositories>
   <repository>
-    <id>simple-db-client</id>
-    <url>https://dl.bintray.com/legosteen11/simple-db-client/</url>
+    <id>jcenter</id>
+    <url>https://jcenter.bintray.com/</url>
   </repository>
 </repositories>
 ```
@@ -23,8 +25,7 @@ First add the repository to your repositories:
 <dependency>
   <groupId>io.github.legosteen11</groupId>
   <artifactId>simple-db-client</artifactId>
-  <version>1.1</version>
-  <type>pom</type>
+  <version>VERSION</version>
 </dependency>
 ```
 
@@ -34,14 +35,12 @@ First add the repository to your repositories:
 
 ```groovy
 repositories {
-    maven {
-        url "https://dl.bintray.com/legosteen11/simple-db-client/"
-    }
+    jcenter()
 }
 ```
 
 ```groovy
-compile 'io.github.legosteen11:simple-db-client:1.1'
+compile 'io.github.legosteen11:simple-db-client:VERSION'
 ```
 
 ### Step 2): Choose your client implementation

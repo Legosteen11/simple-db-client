@@ -39,6 +39,10 @@ class ConnectionPoolDatabaseClient(
         maxLifeTime: Long = 1800000L,
         idleTimeout: Long = 600000L,
         connectionTimeout: Long = 30000L) : IDatabaseClient {
+    override fun disconnect() {
+        hikari.close()
+    }
+
     private val hikari = HikariDataSource().apply {
         // apply settings
         setJdbcUrl(jdbcUrl)
@@ -55,7 +59,21 @@ class ConnectionPoolDatabaseClient(
 
     override fun executeQuery(sql: String, vararg parameters: Any?): ResultSet = getConnection().prepareStatement(sql, *parameters).executeQuery()
 
-    override fun executeUpdate(sql: String, vararg parameters: Any?): Int = getConnection().prepareStatement(sql, *parameters).executeUpdate()
+    override fun executeUpdate(sql: String, vararg parameters: Any?, returnGeneratedKeys: Int?): Int {
+        getConnection().prepareStatement(sql, *parameters, returnGeneratedKeys = returnGeneratedKeys).let {
+            val rowsChanged = it.executeUpdate()
 
+            if (returnGeneratedKeys == null) {
+                return rowsChanged
+            } else {
+                it.generatedKeys.let {
+                    if(it.next()) {
+                        return it.getInt(1)
+                    } else
+                        return -1
+                }
+            }
+        }
+    }
     override fun getSingleValueQuery(sql: String, vararg parameters: Any?): Any? = executeQuery(sql, *parameters).getFirstValue()
 }

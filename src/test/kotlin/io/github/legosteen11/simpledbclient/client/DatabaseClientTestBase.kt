@@ -2,11 +2,10 @@ package io.github.legosteen11.simpledbclient.client
 
 import io.github.legosteen11.simpledbclient.IDatabaseClient
 import org.h2.tools.Server
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 import java.sql.Connection
+import java.sql.Statement
+
 
 /**
  * Base test class.
@@ -15,7 +14,7 @@ import java.sql.Connection
  */
 abstract class DatabaseClientTestBase<out T : IDatabaseClient> {
     private lateinit var server: Server
-    protected val jdbcUrl = "jdbc:h2:tcp://localhost/~/test"
+    protected val jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
     protected val host = ""
     protected val username = ""
     protected val password = ""
@@ -29,7 +28,13 @@ abstract class DatabaseClientTestBase<out T : IDatabaseClient> {
 
         client = getClientInstance()
 
+        //client.executeUpdate("DROP ALL OBJECTS [DELETE FILES]")
+
+//        client.executeUpdate("TRUNCATE TABLE public.test")
+//        client.executeUpdate("TRUNCATE TABLE public.test2")
+
         client.executeUpdate("CREATE TABLE IF NOT EXISTS public.test(id INT, name VARCHAR(50))")
+        client.executeUpdate("CREATE TABLE IF NOT EXISTS public.test2(id INT AUTO_INCREMENT, name VARCHAR(50))")
     }
 
     @Test
@@ -39,26 +44,34 @@ abstract class DatabaseClientTestBase<out T : IDatabaseClient> {
 
     @Test
     fun executeUpdate() {
-        Assert.assertEquals(0, client.executeUpdate("CREATE TABLE IF NOT EXISTS public.test(id INT, name VARCHAR(50))"))
         Assert.assertEquals(1, client.executeUpdate("INSERT INTO public.test VALUES(?, ?)", 5, "testname"))
         Assert.assertEquals(1, client.executeUpdate("INSERT INTO public.test VALUES(?, ?)", 17, "testname2"))
+        Assert.assertEquals(1, client.executeUpdate("INSERT INTO public.test2(name) VALUES(?)","autogenkeystest", returnGeneratedKeys = Statement.RETURN_GENERATED_KEYS))
+        Assert.assertEquals(2, client.executeUpdate("INSERT INTO public.test2(name) VALUES(?)","autogenkeystest2", returnGeneratedKeys = Statement.RETURN_GENERATED_KEYS))
+        Assert.assertEquals(3, client.executeUpdate("INSERT INTO public.test2(name) VALUES(?)","autogenkeystest3", returnGeneratedKeys = Statement.RETURN_GENERATED_KEYS))
     }
 
     @Test
     fun executeQuery() {
+        client.executeUpdate("INSERT INTO public.test VALUES(?, ?)", 5, "testname")
+
         Assert.assertEquals("testname", client.executeQuery("SELECT name FROM public.test WHERE id = ?", 5).apply { next() }.getString("name"))
     }
 
     @Test
     fun getSingleValueQuery() {
+        client.executeUpdate("INSERT INTO public.test VALUES(?, ?)", 17, "testname2")
+
         Assert.assertEquals(null, client.getSingleValueQuery("SELECT name FROM public.test WHERE id = ?", 20))
         Assert.assertEquals("testname2", client.getSingleValueQuery("SELECT name FROM public.test WHERE id = ?", 17))
     }
 
-    @After
-    fun cleanup() {
-        server.stop()
-    }
-
     abstract fun getClientInstance(): T
+
+    @After
+    fun tearDown() {
+        client.executeUpdate("SHUTDOWN")
+
+        client.disconnect()
+    }
 }

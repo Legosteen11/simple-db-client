@@ -66,6 +66,12 @@ abstract class DatabaseClientTestBase<out T : IDatabaseClient> {
         Assert.assertEquals("testname2", client.getSingleValueQuery("SELECT name FROM public.test WHERE id = ?", 17))
     }
 
+    @Test
+    fun executeBatchUpdate() {
+        Assert.assertEquals(arrayOf(1, 2,  3).joinToString(), client.executeBatchUpdate("INSERT INTO public.test2(name) VALUES(?)", arrayOf("test1"), arrayOf("test2"), arrayOf("Test3"), returnGeneratedKeys = Statement.RETURN_GENERATED_KEYS).joinToString())
+        Assert.assertEquals(arrayOf(1, 1, 1).joinToString(), client.executeBatchUpdate("INSERT INTO public.test VALUES(?, ?)", arrayOf(1, "test1"), arrayOf(3, "test2"), arrayOf(314, "test3")).joinToString())
+    }
+
     abstract fun getClientInstance(): T
 
     @After

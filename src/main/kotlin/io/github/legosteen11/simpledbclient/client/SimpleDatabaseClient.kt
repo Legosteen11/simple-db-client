@@ -19,10 +19,6 @@ import java.sql.ResultSet
  * @param jdbcUrl The JDBC url (default with your credentials, = jdbc:[driverName]://[host]:[port]/[database])
  */
 class SimpleDatabaseClient(host: String, username: String, password: String, database: String, port: String = "3306", driverName: String = "mysql", jdbcUrl: String = getJdbcUrl(host, port, database, driverName)) : IDatabaseClient {
-    override fun disconnect() {
-        connection.close()
-    }
-
     private val connection = java.sql.DriverManager.getConnection(jdbcUrl, username, password)
 
     override fun getConnection(): Connection = connection
@@ -47,4 +43,35 @@ class SimpleDatabaseClient(host: String, username: String, password: String, dat
     }
 
     override fun getSingleValueQuery(sql: String, vararg parameters: Any?): Any? = executeQuery(sql, *parameters).getFirstValue()
+
+    override fun disconnect() {
+        connection.close()
+    }
+
+    override fun executeBatchUpdate(sql: String, vararg parameterArray: Array<Any?>, returnGeneratedKeys: Int?): Array<Int> {
+        val statement = (if (returnGeneratedKeys == null) getConnection().prepareStatement(sql) else getConnection().prepareStatement(sql, returnGeneratedKeys)).apply {
+            parameterArray.forEach {
+                it.forEachIndexed { index, value ->
+                    setObject(index+1, value)
+                }
+                addBatch()
+            }
+        }
+
+        val rowsChanged = statement.executeBatch().toTypedArray()
+
+        if(returnGeneratedKeys == null) {
+            return rowsChanged
+        } else {
+            val genKeys = arrayListOf<Int>()
+
+            statement.generatedKeys.let {
+                while (it.next()) {
+                    genKeys.add(it.getInt(1))
+                }
+            }
+
+            return genKeys.toTypedArray()
+        }
+    }
 }

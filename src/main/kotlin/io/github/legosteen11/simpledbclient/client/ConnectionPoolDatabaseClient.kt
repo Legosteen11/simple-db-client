@@ -75,5 +75,33 @@ class ConnectionPoolDatabaseClient(
             }
         }
     }
+
     override fun getSingleValueQuery(sql: String, vararg parameters: Any?): Any? = executeQuery(sql, *parameters).getFirstValue()
+
+    override fun executeBatchUpdate(sql: String, vararg parameterArray: Array<Any?>, returnGeneratedKeys: Int?): Array<Int> {
+        val statement = (if (returnGeneratedKeys == null) getConnection().prepareStatement(sql) else getConnection().prepareStatement(sql, returnGeneratedKeys)).apply {
+            parameterArray.forEach {
+                it.forEachIndexed { index, value ->
+                    setObject(index+1, value)
+                }
+                addBatch()
+            }
+        }
+
+        val rowsChanged = statement.executeBatch().toTypedArray()
+
+        if(returnGeneratedKeys == null) {
+            return rowsChanged
+        } else {
+            val genKeys = arrayListOf<Int>()
+
+            statement.generatedKeys.let {
+                while (it.next()) {
+                    genKeys.add(it.getInt(1))
+                }
+            }
+
+            return genKeys.toTypedArray()
+        }
+    }
 }
